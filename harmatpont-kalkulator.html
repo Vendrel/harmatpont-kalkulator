@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harmatpont-kalkulátor</title>
+
+<style>
+
+*{
+	box-sizing:border-box;
+	margin:0;
+	padding:0;
+}
+
+body{
+	min-height:100vh;
+	display:flex;
+	justify-content:center;
+	align-items:center;
+
+	background:
+		radial-gradient(circle at top left,#173a57 0%,transparent 40%),
+		radial-gradient(circle at bottom right,#28114a 0%,transparent 40%),
+		linear-gradient(135deg,#070b13,#0f1623);
+
+	font-family:system-ui,sans-serif;
+	color:#e7f7ff;
+}
+
+.card{
+
+	width:min(420px,90vw);
+
+	padding:34px;
+
+	border-radius:24px;
+
+	background:rgba(18,24,38,.78);
+
+	backdrop-filter:blur(18px);
+
+	border:1px solid rgba(120,220,255,.18);
+
+	box-shadow:
+		0 0 0 1px rgba(130,230,255,.05),
+		0 0 18px rgba(0,220,255,.12),
+		0 0 45px rgba(0,170,255,.08),
+		inset 0 1px 0 rgba(255,255,255,.06),
+		inset 0 0 24px rgba(120,220,255,.03);
+
+}
+
+h1{
+
+	text-align:center;
+	margin-bottom:28px;
+
+	font-size:1.5rem;
+	font-weight:700;
+
+	color:#bff7ff;
+
+	text-shadow:
+		0 0 8px rgba(90,240,255,.55),
+		0 0 20px rgba(90,240,255,.2);
+
+}
+
+.field{
+
+	margin-bottom:20px;
+
+}
+
+label{
+
+	display:block;
+
+	margin-bottom:8px;
+
+	font-size:.9rem;
+
+	color:#9fe8ff;
+
+}
+
+.inputWrap{
+
+	position:relative;
+
+}
+
+input{
+
+	width:100%;
+
+	padding:14px 52px 14px 16px;
+
+	border-radius:14px;
+
+	border:1px solid rgba(120,220,255,.2);
+
+	background:rgba(12,18,30,.9);
+
+	color:white;
+
+	font-size:1rem;
+
+	outline:none;
+
+	transition:.25s;
+
+	box-shadow:
+		inset 0 0 10px rgba(0,255,255,.03);
+
+}
+
+input:focus{
+
+	border-color:#55e9ff;
+
+	box-shadow:
+		0 0 10px rgba(85,233,255,.35),
+		0 0 25px rgba(85,233,255,.18),
+		inset 0 0 10px rgba(85,233,255,.08);
+
+}
+
+.unit{
+
+	position:absolute;
+
+	right:16px;
+	top:50%;
+
+	transform:translateY(-50%);
+
+	color:#76f3ff;
+
+	font-weight:600;
+
+}
+
+.result{
+
+	margin-top:30px;
+
+	padding:18px;
+
+	border-radius:16px;
+
+	text-align:center;
+
+	background:rgba(0,255,255,.03);
+
+	border:1px solid rgba(100,255,255,.12);
+
+	box-shadow:
+		inset 0 0 16px rgba(0,255,255,.03),
+		0 0 16px rgba(0,255,255,.08);
+
+}
+
+.result small{
+
+	display:block;
+
+	margin-bottom:8px;
+
+	color:#8fd7f0;
+
+}
+
+.value{
+
+	font-size:2rem;
+
+	font-weight:700;
+
+	color:#8ffcff;
+
+	text-shadow:
+		0 0 10px rgba(143,252,255,.7),
+		0 0 25px rgba(143,252,255,.25);
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+	<h1>Harmatpont kalkulátor</h1>
+
+	<div class="field">
+
+		<label>Hőmérséklet</label>
+
+		<div class="inputWrap">
+
+			<input
+				id="temp"
+				type="number"
+				min="0"
+				max="50"
+				value="25"
+				step="0.1">
+
+			<span class="unit">℃</span>
+
+		</div>
+
+	</div>
+
+	<div class="field">
+
+		<label>Páratartalom</label>
+
+		<div class="inputWrap">
+
+			<input
+				id="hum"
+				type="number"
+				min="1"
+				max="100"
+				value="60">
+
+			<span class="unit">%</span>
+
+		</div>
+
+	</div>
+
+	<div class="result">
+
+		<small>Harmatpont</small>
+
+		<div class="value">
+			<span id="dewPoint">16.7</span> ℃
+		</div>
+
+	</div>
+
+</div>
+
+<script>
+
+const tempInput = document.getElementById('temp');
+const humInput = document.getElementById('hum');
+const output = document.getElementById('dewPoint');
+
+function calculate(){
+
+	let T = parseFloat(tempInput.value);
+	let RH = parseFloat(humInput.value);
+
+	if(
+		isNaN(T) ||
+		isNaN(RH) ||
+		RH <= 0
+	){
+		output.textContent = '--';
+		return;
+	}
+
+	// Magnus-formula
+	const a = 17.62;
+	const b = 243.12;
+
+	const gamma =
+		(a * T) / (b + T) +
+		Math.log(RH / 100);
+
+	const Td =
+		(b * gamma) /
+		(a - gamma);
+
+	output.textContent =
+		Td.toFixed(1);
+
+}
+
+tempInput.addEventListener('input',calculate);
+humInput.addEventListener('input',calculate);
+
+calculate();
+
+</script>
+
+</body>
+</html>
